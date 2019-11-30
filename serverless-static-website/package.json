@@ -1,0 +1,19 @@
+{
+  "name": "serverless-static-website",
+  "version": "1.0.0",
+  "description": "",
+  "main": "handler.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/psech/serverless-static-website.git"
+  },
+  "author": "Przemek Sech",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/psech/serverless-static-website/issues"
+  },
+  "homepage": "https://github.com/psech/serverless-static-website#readme"
+}
