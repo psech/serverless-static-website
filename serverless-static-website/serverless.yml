@@ -2,6 +2,16 @@ service: serverless-static-website
 
 frameworkVersion: ">=1.57.0"
 
+plugins:
+  - serverless-finch
+  - serverless-pseudo-parameters
+
+custom:
+  client:
+    bucketName: ${self:service}-${opt:stage}-bucket
+    distributionFolder: src/frontend
+    errorDocument: index.html
+
 provider:
   name: aws
   runtime: nodejs10.x

@@ -1,3 +1,13 @@
+# package directories
+node_modules
+jspm_packages
+
+# Serverless directories
+.serverless
+
+# debug
+debug
+
 # Logs
 logs
 *.log

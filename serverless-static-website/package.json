@@ -15,5 +15,9 @@
   "bugs": {
     "url": "https://github.com/psech/serverless-static-website/issues"
   },
-  "homepage": "https://github.com/psech/serverless-static-website#readme"
+  "homepage": "https://github.com/psech/serverless-static-website#readme",
+  "devDependencies": {
+    "serverless-finch": "^2.4.3",
+    "serverless-pseudo-parameters": "^2.5.0"
+  }
 }

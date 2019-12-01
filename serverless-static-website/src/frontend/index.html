@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+
+    <!-- Bootstrap CSS -->
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+      integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+      crossorigin="anonymous"
+    />
+
+    <title>ZipMoney Microsoft CSP Order</title>
+  </head>
+  <body>
+    <nav class="navbar sticky-top navbar-light bg-light">
+        <a class="navbar-brand" href="#">
+            <img src="images/Danet_Logo_SVG.svg" height="30" alt="Danet">
+          </a>
+      <button
+        type="button"
+        class="btn btn-lg btn-success float-right"
+        id="submit"
+      >
+        Buy
+      </button>
+    </nav>
+    <div class="container">
+      <div class="row">
+        <div class="col-sm">
+          <div class="accordion" id="productsAccordion"></div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="modal fade"
+      id="confirmationModal"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="confirmationModal"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="confirmationModal">
+              Selected products
+            </h5>
+            <button
+              type="button"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            Something went wrong.
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-dismiss="modal"
+            >
+              Close
+            </button>
+            <button type="button" class="btn btn-primary">Confirm</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script
+      src="https://code.jquery.com/jquery-3.4.1.min.js"
+      integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+      integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"
+      integrity="sha384-6khuMg9gaYr5AxOqhkVIODVIvm9ynTT5J4V1cfthmT+emCG6yVmEZsRHdxlotUnm"
+      crossorigin="anonymous"
+    ></script>
+
+    <script>
+      $("#submit").on("click", function() {
+        const selected = [];
+        $("input:checked").each(function() {
+          selected.push({ name: $(this).val(), id: $(this).prop("id") });
+        });
+
+        const message =
+          "<p>You have selected the following products to order:</p>";
+        const selectedProductNames = selected
+          .map(p => `<li class="list-group-item">${p.name}</li>`)
+          .join("");
+        $("#confirmationModal .modal-body")
+          .empty()
+          .append(
+            message +
+              '<ul class="list-group list-group-flush">' +
+              selectedProductNames +
+              "</ul>"
+          );
+        $("#confirmationModal").modal();
+      });
+    </script>
+
+    <script>
+      const url = "http://localhost:3000/root";
+      const accordionId = "productsAccordion";
+
+      const genSingleProduct = product => {
+        console.log("genSingleProduct has been called");
+
+        return `<div class="input-group mb-3">
+            <div class="input-group-prepend">
+              <div class="input-group-text">
+                <input type="checkbox" id="${product.ProductId}" value="${product.ProductName}">
+              </div>
+            </div>
+            <input type="text" disabled class="form-control" value="${product.ProductName}">
+          </div>`;
+      };
+
+      const genCardContent = products => {
+        console.log("genCardContent has been called");
+
+        const genProducts = products => {
+          return products.reduce((acc, product) => {
+            return acc.concat(genSingleProduct(product));
+          }, "");
+        };
+
+        const listGroupMarkup = `<ul class="custom-control custom-checkbox" id="product-list">
+            ${genProducts(products)}
+          </ul>`;
+
+        return listGroupMarkup;
+      };
+
+      const genSingleCard = (productGroup, index) => {
+        console.log("genSingleCard has been called");
+
+        const cardId = productGroup.GroupName;
+        const products = productGroup.Products;
+
+        return `<div class="card">
+          <div class="card-header" id="${cardId}">
+            <h2 class="mb-0">
+              <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapse-${index}" aria-expanded="false" aria-controls="collapse-${index}">
+                ${cardId}
+              </button>
+            </h2>
+          </div>
+          <div id="collapse-${index}" class="collapse" aria-labelledby="${cardId}" data-parent="#${accordionId}">
+            <div class="card-body">
+              ${genCardContent(products)}
+            </div>
+          </div>
+        </div>`;
+      };
+
+      const genCards = () => {
+        console.log("genCards has been called");
+      };
+
+      const accordion = $(`#${accordionId}`);
+      accordion.empty();
+
+      $.getJSON(url, data => {
+        const productGroups = data.ProductGroups;
+        $.each(productGroups, index => {
+          accordion.append(genSingleCard(productGroups[index], index));
+        });
+      });
+    </script>
+  </body>
+</html>
