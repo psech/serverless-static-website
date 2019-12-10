@@ -20,9 +20,9 @@
   </head>
   <body>
     <nav class="navbar sticky-top navbar-light bg-light">
-        <a class="navbar-brand" href="#">
-            <img src="images/Danet_Logo_SVG.svg" height="30" alt="Danet">
-          </a>
+      <a class="navbar-brand" href="#">
+        <img src="images/Danet_Logo_SVG.svg" height="30" alt="Danet" />
+      </a>
       <button
         type="button"
         class="btn btn-lg btn-success float-right"
@@ -122,12 +122,11 @@
     </script>
 
     <script>
-      const url = "http://localhost:3000/root";
+      const url =
+        "https://9tdvys0rs0.execute-api.ap-southeast-2.amazonaws.com/dev/products/available";
       const accordionId = "productsAccordion";
 
       const genSingleProduct = product => {
-        console.log("genSingleProduct has been called");
-
         return `<div class="input-group mb-3">
             <div class="input-group-prepend">
               <div class="input-group-text">
@@ -139,8 +138,6 @@
       };
 
       const genCardContent = products => {
-        console.log("genCardContent has been called");
-
         const genProducts = products => {
           return products.reduce((acc, product) => {
             return acc.concat(genSingleProduct(product));
@@ -155,8 +152,6 @@
       };
 
       const genSingleCard = (productGroup, index) => {
-        console.log("genSingleCard has been called");
-
         const cardId = productGroup.GroupName;
         const products = productGroup.Products;
 
@@ -176,19 +171,32 @@
         </div>`;
       };
 
-      const genCards = () => {
-        console.log("genCards has been called");
-      };
-
       const accordion = $(`#${accordionId}`);
       accordion.empty();
 
-      $.getJSON(url, data => {
+      const xmlRequest = $.ajax({
+        method: "GET",
+        url: url,
+        beforeSend: () => {
+          accordion.append(`<div class="spinner-grow m-5" style="width: 3rem; height: 3rem;" role="status">
+            <span class="sr-only">Loading...</span></div>`);
+        }
+      });
+
+      xmlRequest.done(data => {
+        accordion.empty();
         const productGroups = data.ProductGroups;
         $.each(productGroups, index => {
           accordion.append(genSingleCard(productGroups[index], index));
         });
       });
+
+      // $.getJSON(url, data => {
+      //   const productGroups = data.ProductGroups;
+      //   $.each(productGroups, index => {
+      //     accordion.append(genSingleCard(productGroups[index], index));
+      //   });
+      // });
     </script>
   </body>
 </html>
