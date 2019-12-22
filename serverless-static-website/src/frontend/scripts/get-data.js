@@ -1,8 +1,10 @@
 const accordionId = "productsAccordion";
 const accordion = $(`#${accordionId}`);
 
-const url =
-  "https://9tdvys0rs0.execute-api.ap-southeast-2.amazonaws.com/dev/products/available";
+// const url =
+//   "https://9tdvys0rs0.execute-api.ap-southeast-2.amazonaws.com/dev/products/available";
+
+const url = "http://localhost:3000/products/available";
 
 $("#api-key-form").submit(() => {
   const apiKey = $("#api-key-input").val();
@@ -20,8 +22,8 @@ $("#api-key-form").submit(() => {
     },
     beforeSend: () => showLoading()
   })
-    .done(data => onDone(data))
-    .fail(error => onFailure(error));
+    .done(data => gatDataOnDone(data))
+    .fail(error => getDataOnFailure(error));
 });
 
 const showLoading = () => {
@@ -40,7 +42,7 @@ const showProvideApiKey = () => {
   );
 };
 
-const onDone = data => {
+const gatDataOnDone = data => {
   accordion.empty();
   const productGroups = data.ProductGroups;
 
@@ -49,7 +51,7 @@ const onDone = data => {
   });
 };
 
-const onFailure = error => {
+const getDataOnFailure = error => {
   accordion.empty();
   console.log(error);
   accordion.append(
@@ -95,10 +97,21 @@ const genSingleProduct = product => {
   return `<div class="input-group mb-3">
       <div class="input-group-prepend">
         <div class="input-group-text">
-          <input type="checkbox" id="${product.ProductId}" value="${product.ProductName}">
+          <input type="checkbox" id="${product.ProductId}" value="${
+    product.ProductName
+  }">
         </div>
       </div>
-      <input type="text" disabled class="form-control" value="${product.ProductName}">
+      <input type="text" disabled class="form-control" value="${
+        product.ProductName
+      }">
+      <div class="input-group-append">
+        <span class="input-group-text">$
+          ${product.RetailUnitPrice.toFixed(2)}
+        </span>
+        <div role="separator" class="dropdown-divider"></div>
+        
+      </div>
     </div>`;
 };
 

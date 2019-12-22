@@ -13,7 +13,7 @@ const getProducts = async event => {
     const authToken = await authorize();
     const availableProducts = await prismportal.getAvailableProducts(authToken);
 
-    // TODO: Consider filtering response to return limited json object 
+    // TODO: Consider filtering response to return limited json object
     // as full API response is not needed and may reveal some sensitive information.
 
     return {
@@ -30,6 +30,28 @@ const getProducts = async event => {
   }
 };
 
-const getProductsHandler = middy(getProducts).use(cors());
+const makeOrder = async event => {
+  logger.log(">> handler.makeOrder has been called");
 
-module.exports = { getProductsHandler };
+  console.log(require("util").inspect(event, false, null));
+
+  const products = JSON.parse(event.body);
+  console.log(products);
+
+  try {
+    const authToken = await authorize();
+    await prismportal.makeOrder(authToken, products);
+
+    return {
+      statusCode: 204
+    };
+  } catch (error) {
+    logger.error(error);
+    return { statusCode: 500, body: JSON.stringify(error) };
+  }
+};
+
+const getProductsHandler = middy(getProducts).use(cors());
+const makeOrderHandler = middy(makeOrder).use(cors());
+
+module.exports = { getProductsHandler, makeOrderHandler };

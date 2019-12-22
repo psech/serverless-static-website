@@ -43,6 +43,15 @@ functions:
           path: products/available
           private: true
           cors: true
+  makeOrder:
+    handler: src/backend/handler.makeOrderHandler
+    timeout: 30
+    events:
+      - http:
+          method: post
+          path: products/order
+          private: true
+          cors: true
 
 resources:
   Resources:

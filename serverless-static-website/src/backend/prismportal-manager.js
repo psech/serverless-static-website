@@ -24,6 +24,33 @@ const getAvailableProducts = async token => {
   return response.data;
 };
 
+const makeOrder = async (token, products) => {
+  logger.log(">> prismportal-manager.getAvailableProducts has been called");
+
+  const requestOptions = {
+    method: "POST",
+    url: "https://api.prismportal.online/api/v2/microsoftcsp/orders",
+    headers: {
+      authorization: `${token.token_type} ${token.access_token}`,
+      "content-type": "application/json",
+      "cache-control": "no-cache"
+    },
+    data: {
+      tenantId: tenantId,
+      orderBillingCycle: "Monthly",
+      products: products
+    }
+  };
+
+  // const response = await axios.request(requestOptions);
+  const response = await Promise.resolve();
+
+  console.log(require("util").inspect(response, false, null));
+
+  return response;
+};
+
 module.exports = {
-  getAvailableProducts
+  getAvailableProducts,
+  makeOrder
 };
