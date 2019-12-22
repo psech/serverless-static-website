@@ -1,11 +1,25 @@
 $("#confirmPurchase").on("click", function() {
-  const products = [];
+  const selectedProducts = [];
   $("input:checked").each(function() {
-    products.push({ productId: $(this).prop("id"), qty: 1 });
-  });
+    const parent = $(this)
+      .parent()
+      .parent()
+      .parent();
 
-  console.log(products);
-  console.log(JSON.stringify(products));
+    const qty = $(parent)
+      .find("#qty")
+      .val();
+    const price = $(parent)
+      .find("#RetailUnitPrice")
+      .attr("data-price");
+
+    selectedProducts.push({
+      name: $(this).val(),
+      id: $(this).prop("id"),
+      qty: qty,
+      price: price
+    });
+  });
 
   const apiKey = $("#api-key-input").val();
 
@@ -14,10 +28,8 @@ $("#confirmPurchase").on("click", function() {
     return;
   }
 
-  // const url =
-  //   "https://9tdvys0rs0.execute-api.ap-southeast-2.amazonaws.com/dev/products/order";
-
-  const url = "http://localhost:3000/products/order";
+  const url =
+    "https://9tdvys0rs0.execute-api.ap-southeast-2.amazonaws.com/dev/products/order";
 
   $.ajax({
     method: "POST",
@@ -25,7 +37,7 @@ $("#confirmPurchase").on("click", function() {
     headers: {
       "x-api-key": apiKey
     },
-    data: JSON.stringify(products),
+    data: JSON.stringify(selectedProducts),
     beforeSend: () => showLoading()
   })
     .done(purchaseOnDone)

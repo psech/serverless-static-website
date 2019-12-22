@@ -42,12 +42,9 @@ const makeOrder = async (token, products) => {
     }
   };
 
-  // const response = await axios.request(requestOptions);
-  const response = await Promise.resolve();
+  logger.log("requestOptions", require("util").inspect(requestOptions, false, null));
 
-  console.log(require("util").inspect(response, false, null));
-
-  return response;
+  return await axios.request(requestOptions);
 };
 
 module.exports = {
