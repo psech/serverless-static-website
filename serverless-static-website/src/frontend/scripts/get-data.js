@@ -49,6 +49,8 @@ const gatDataOnDone = data => {
   $.each(productGroups, index => {
     accordion.append(genSingleCard(productGroups[index], index));
   });
+
+  $("input[id='qty']").inputSpinner();
 };
 
 const getDataOnFailure = error => {
@@ -97,20 +99,22 @@ const genSingleProduct = product => {
   return `<div class="input-group mb-3">
       <div class="input-group-prepend">
         <div class="input-group-text">
-          <input type="checkbox" id="${product.ProductId}" value="${
-    product.ProductName
-  }">
+          <input type="checkbox" 
+            id="${product.ProductId}" 
+            value="${product.ProductName}"
+          >
         </div>
       </div>
-      <input type="text" disabled class="form-control" value="${
-        product.ProductName
-      }">
+      <input type="text" disabled class="form-control" value="
+        ${product.ProductName}
+      ">
       <div class="input-group-append">
-        <span class="input-group-text">$
-          ${product.RetailUnitPrice.toFixed(2)}
+        <span class="input-group-text" id="RetailUnitPrice" 
+          data-price="${product.RetailUnitPrice.toFixed(2)}">
+            $${product.RetailUnitPrice.toFixed(2)}
         </span>
         <div role="separator" class="dropdown-divider"></div>
-        
+        <input id="qty" class="form-control short-input" type="number" value="1" min="0" step="1"/>
       </div>
     </div>`;
 };
