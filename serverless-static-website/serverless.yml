@@ -9,6 +9,7 @@ plugins:
   - serverless-export-env
 
 custom:
+  config: ${file(./infra/serverless-${opt:stage}.yml)}
   client:
     bucketName: ${self:service}-${opt:stage}-bucket
     distributionFolder: src/frontend
@@ -19,11 +20,12 @@ provider:
   runtime: nodejs12.x
   stage: ${opt:stage, 'dev'}
   region: ${opt:region, 'ap-southeast-2'}
-  profile: private
+  profile: Danet
   environment:
     CLIENT_ID: ${ssm:ZipMoney-Client-Id~true}
     CLIENT_SECRET: ${ssm:ZipMoney-Client-Secret~true}
     ZIPMONEY_TENANT_ID: ${ssm:ZipMoney-Tenant-Id~true}
+    API_STAGE_URL: ${self:custom.config.stageUrl}
   apiKeys:
     - ${self:service}-${opt:stage}-apikey
 
@@ -43,6 +45,15 @@ functions:
           path: products/available
           private: true
           cors: true
+  getSubscriptions:
+    handler: src/backend/handler.getSubscriptionsHandler
+    timeout: 30
+    events:
+      - http:
+          method: get
+          path: subscriptions
+          private: true
+          cors: true
   makeOrder:
     handler: src/backend/handler.makeOrderHandler
     timeout: 30
@@ -50,6 +61,15 @@ functions:
       - http:
           method: post
           path: products/order
+          private: true
+          cors: true
+  updateSubscription:
+    handler: src/backend/handler.updateSubscriptionHandler
+    timeout: 30
+    events:
+      - http:
+          method: post
+          path: subscriptions
           private: true
           cors: true
 

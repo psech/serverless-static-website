@@ -26,7 +26,56 @@ const getProducts = async event => {
     };
   } catch (error) {
     logger.error(error);
-    return { statusCode: 500, body: JSON.stringify(error) };
+    return { statusCode: 500, body: error };
+  }
+};
+
+const getSubscriptions = async event => {
+  logger.log(">> handler.getSubscriptions has been called");
+
+  try {
+    const authToken = await authorize();
+    const subscriptions = await prism.getSubscriptions(authToken);
+    const addonSubscriptions = [];
+    const filteredSubscriptions = subscriptions.Subscriptions.filter(
+      sub => sub.Status === "Active" && sub.Unit !== "Usage-based"
+    ).map(sub => {
+      const filteredSub = {
+        FriendlyName: sub.FriendlyName,
+        SubscriptionId: sub.SubscriptionId,
+        Quantity: sub.Quantity,
+        Unit: sub.Unit,
+        UnitPrice: sub.UnitPrice
+      };
+
+      if (sub.AddonSubscriptions !== null) {
+        const addSubs = sub.AddonSubscriptions.map(adSub => ({
+          FriendlyName: sub.FriendlyName,
+          AddonFriendlyName: adSub.FriendlyName,
+          SubscriptionId: adSub.SubscriptionId,
+          Quantity: adSub.Quantity,
+          Unit: adSub.Unit,
+          UnitPrice: adSub.UnitPrice
+        }));
+
+        addonSubscriptions.push(...addSubs);
+      }
+
+      return filteredSub;
+    });
+
+    const subsToReturn = [
+      ...filteredSubscriptions,
+      ...addonSubscriptions
+    ].sort((a, b) => a.FriendlyName.localeCompare(b.FriendlyName));
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify(subsToReturn)
+    };
+  } catch (error) {
+    logger.error(error);
+    return { statusCode: 500, body: error };
   }
 };
 
@@ -41,18 +90,42 @@ const makeOrder = async event => {
 
   try {
     const authToken = await authorize();
-    await prism.makeOrder(authToken, order);
+    const response = await prism.makeOrder(authToken, order);
 
     return {
-      statusCode: 204
+      statusCode: response.status
     };
   } catch (error) {
     logger.error(error);
-    return { statusCode: 500, body: JSON.stringify(error) };
+    return { statusCode: 500, body: error };
   }
 };
 
-const getProductsHandler = middy(getProducts).use(cors());
-const makeOrderHandler = middy(makeOrder).use(cors());
+const updateSubscription = async event => {
+  logger.log(">> handler.updateSubscription has been called");
 
-module.exports = { getProductsHandler, makeOrderHandler };
+  try {
+    const data = JSON.parse(event.body);
+
+    if (!data.subscriptionId || !data.newQuantity) {
+      throw new Error("Mandatory parameter missing");
+    }
+
+    const authToken = await authorize();
+    const response = await prism.updateSubscription(authToken, data);
+
+    return {
+      statusCode: response.status
+    };
+  } catch (error) {
+    logger.error(error);
+    return { statusCode: 500, body: error };
+  }
+};
+
+module.exports = {
+  getProductsHandler: middy(getProducts).use(cors()),
+  getSubscriptionsHandler: middy(getSubscriptions).use(cors()),
+  makeOrderHandler: middy(makeOrder).use(cors()),
+  updateSubscriptionHandler: middy(updateSubscription).use(cors())
+};
