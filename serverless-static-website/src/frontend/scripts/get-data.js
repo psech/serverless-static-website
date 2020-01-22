@@ -1,10 +1,8 @@
 const accordionId = "productsAccordion";
 const accordion = $(`#${accordionId}`);
 
-// const url =
-//   "https://9tdvys0rs0.execute-api.ap-southeast-2.amazonaws.com/dev/products/available";
-
-const url = "http://localhost:3000/products/available";
+const url =
+  "https://u8e0yimqpc.execute-api.ap-southeast-2.amazonaws.com/dev/products/available";
 
 $("#api-key-form").submit(() => {
   const apiKey = $("#api-key-input").val();
