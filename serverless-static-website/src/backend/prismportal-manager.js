@@ -25,7 +25,7 @@ const getAvailableProducts = async token => {
 };
 
 const makeOrder = async (token, products) => {
-  logger.log(">> prismportal-manager.getAvailableProducts has been called");
+  logger.log(">> prismportal-manager.makeOrder has been called");
 
   const requestOptions = {
     method: "POST",
@@ -42,7 +42,7 @@ const makeOrder = async (token, products) => {
     }
   };
 
-  logger.log("requestOptions", require("util").inspect(requestOptions, false, null));
+  logger.log("requestOptions", JSON.stringify(requestOptions));
 
   return await axios.request(requestOptions);
 };

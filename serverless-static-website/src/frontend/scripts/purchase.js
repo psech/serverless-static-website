@@ -28,8 +28,16 @@ $("#confirmPurchase").on("click", function() {
     return;
   }
 
+  // DEV
+  // const url =
+  //   "https://u8e0yimqpc.execute-api.ap-southeast-2.amazonaws.com/dev/products/order";
+
+  // PROD
   const url =
-    "https://9tdvys0rs0.execute-api.ap-southeast-2.amazonaws.com/dev/products/order";
+    "https://fp4vid2tef.execute-api.ap-southeast-2.amazonaws.com/prod/products/order";
+
+  // LOCAL
+  // const url = "http://localhost:3000/products/order";
 
   $.ajax({
     method: "POST",
