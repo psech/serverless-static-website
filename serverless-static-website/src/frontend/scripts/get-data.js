@@ -1,10 +1,16 @@
 const accordionId = "productsAccordion";
 const accordion = $(`#${accordionId}`);
 
+// DEV
 // const url =
-//   "https://9tdvys0rs0.execute-api.ap-southeast-2.amazonaws.com/dev/products/available";
+//   "https://u8e0yimqpc.execute-api.ap-southeast-2.amazonaws.com/dev/products/available";
 
-const url = "http://localhost:3000/products/available";
+// PROD
+const url =
+  "https://fp4vid2tef.execute-api.ap-southeast-2.amazonaws.com/prod/products/available";
+
+// LOCAL
+// const url = "http://localhost:3000/products/available";
 
 $("#api-key-form").submit(() => {
   const apiKey = $("#api-key-input").val();

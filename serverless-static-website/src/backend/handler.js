@@ -1,10 +1,14 @@
 "use strict";
 
+const AWS = require("aws-sdk");
+const sqs = new AWS.SQS({ region: "ap-southeast-2" });
+
 const { authorize } = require("./auth-manager");
 const logger = require("./utils/logger");
 const prism = require("./prismportal-manager");
 const middy = require("middy");
 const { cors } = require("middy/middlewares");
+const { getEnv } = require("./utils/env");
 
 const getProducts = async event => {
   logger.log(">> handler.getProducts has been called");
@@ -41,7 +45,10 @@ const makeOrder = async event => {
 
   try {
     const authToken = await authorize();
-    await prism.makeOrder(authToken, order);
+    await Promise.all([
+      prism.makeOrder(authToken, order),
+      requestEmail(products)
+    ]);
 
     return {
       statusCode: 204
@@ -52,7 +59,23 @@ const makeOrder = async event => {
   }
 };
 
+const requestEmail = async products => {
+  logger.log(">> handler.testEmail has been called");
+
+  const params = {
+    MessageBody: JSON.stringify(products),
+    QueueUrl: getEnv("EMAIL_QUEUE_URL")
+  };
+
+  try {
+    return await sqs.sendMessage(params).promise();
+  } catch (error) {
+    logger.error(error);
+    throw new Error("Could not send the message");
+  }
+};
+
 const getProductsHandler = middy(getProducts).use(cors());
 const makeOrderHandler = middy(makeOrder).use(cors());
 
-module.exports = { getProductsHandler, makeOrderHandler };
+module.exports = { getProductsHandler, makeOrderHandler, requestEmail };
