@@ -5,7 +5,7 @@ const mustache = require("mustache");
 const logger = require("./utils/logger");
 const { getEnv } = require("./utils/env");
 
-const sendEmail = async event => {
+const sendEmail = async (event) => {
   logger.log(">> email.sendEmail has been called");
 
   console.log("EVENT", event);
@@ -22,27 +22,30 @@ const sendEmail = async event => {
     secure: false, // upgrade later with STARTTLS
     auth: {
       user: "zipco",
-      pass: getEnv("SMTP_PASSWORD")
-    }
+      pass: getEnv("SMTP_PASSWORD"),
+    },
   });
 
   const message = {
     from: "Danet Portal <portal@danet.com.au>",
-    to: "Robert Kulik <robert@danet.com.au>",
+    to: [
+      "Robert Kulik <robert@danet.com.au>",
+      "accounts@DataTransferItem.com.au",
+    ],
     cc: ["Przemek Sech <przemek.sech@gmail.com>"],
     subject: "ZipMoney portal new order",
     text: JSON.stringify(products),
-    html: emailMessage
+    html: emailMessage,
   };
 
   const smtpReady = await transporter
     .verify()
-    .catch(error => logger.error(error));
+    .catch((error) => logger.error(error));
 
   if (smtpReady) {
     const response = await transporter
       .sendMail(message)
-      .catch(error => logger.error(error));
+      .catch((error) => logger.error(error));
 
     console.log("response", response);
     return response;
@@ -51,7 +54,7 @@ const sendEmail = async event => {
   }
 };
 
-const generateEmailMessage = products => {
+const generateEmailMessage = (products) => {
   logger.log(">> email.generateEmailMessage has been called");
 
   const template = `<!DOCTYPE html>
