@@ -6,7 +6,10 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "json-server": "json-server ./debug/products.json --port 8080 --watch",
-    "deploy:frontend": "sls client deploy -s dev -r ap-southeast-2 --no-confirm"
+    "deploy:backend:dev": "sls deploy -s dev -r ap-southeast-2",
+    "deploy:backend:prod": "sls deploy -s prod -r ap-southeast-2",
+    "deploy:frontend:dev": "sls client deploy -s dev -r ap-southeast-2 --no-confirm",
+    "deploy:frontend:prod": "sls client deploy -s prod -r ap-southeast-2 --no-confirm"
   },
   "repository": {
     "type": "git",
